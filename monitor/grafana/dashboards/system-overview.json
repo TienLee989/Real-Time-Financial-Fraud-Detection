@@ -1,0 +1,143 @@
+{
+  "id": null,
+  "uid": "system-overview",
+  "title": "System Overview",
+  "tags": [
+    "infrastructure",
+    "monitoring"
+  ],
+  "timezone": "browser",
+  "schemaVersion": 36,
+  "version": 1,
+  "refresh": "10s",
+  "time": {
+    "from": "now-5m",
+    "to": "now"
+  },
+  "panels": [
+    {
+      "type": "graph",
+      "title": "Total SMS Send Requests",
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "sum by (topic) (sms_requests_total)",
+          "legendFormat": "{{topic}}",
+          "refId": "A"
+        }
+      ],
+      "xaxis": {
+        "mode": "time"
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": "Requests",
+          "logBase": 1,
+          "min": 0
+        },
+        {
+          "format": "short",
+          "logBase": 1
+        }
+      ],
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "type": "graph",
+      "title": "Kafka Published Messages",
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "sum by (topic) (sms_published_total)",
+          "legendFormat": "{{topic}}",
+          "refId": "A"
+        }
+      ],
+      "xaxis": {
+        "mode": "time"
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": "Published",
+          "logBase": 1,
+          "min": 0
+        },
+        {
+          "format": "short",
+          "logBase": 1
+        }
+      ],
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 0
+      }
+    },
+    {
+      "type": "graph",
+      "title": "Kafka/Redis Errors",
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "sum by (topic) (sms_errors_total)",
+          "legendFormat": "{{topic}}",
+          "refId": "A"
+        }
+      ],
+      "xaxis": {
+        "mode": "time"
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": "Errors",
+          "logBase": 1,
+          "min": 0
+        },
+        {
+          "format": "short",
+          "logBase": 1
+        }
+      ],
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 9
+      }
+    },
+    {
+      "type": "heatmap",
+      "title": "Processing Duration (seconds)",
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "sms_duration_seconds_bucket",
+          "legendFormat": "{{le}}s [{{stage}}, {{topic}}]",
+          "refId": "A"
+        }
+      ],
+      "xaxis": {
+        "mode": "time"
+      },
+      "yaxis": {
+        "format": "s",
+        "label": "Duration bucket (s)"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 9
+      }
+    }
+  ]
+}

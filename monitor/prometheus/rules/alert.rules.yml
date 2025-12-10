@@ -1,0 +1,102 @@
+groups:
+  - name: service_alerts
+    rules:
+      # 1. Instance down
+      - alert: InstanceDown
+        expr: up == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Instance {{ $labels.instance }} is down"
+          description: "Job {{ $labels.job }} is down for more than 1 minute."
+
+      # 2. High CPU usage
+      - alert: HighCPUUsage
+        expr: rate(node_cpu_seconds_total{mode!="idle"}[1m]) > 0.9
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High CPU usage on {{ $labels.instance }}"
+          description: "CPU usage is over 90% for more than 2 minutes."
+
+      # 3. High memory usage
+      - alert: HighMemoryUsage
+        expr: (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes > 0.9
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High Memory usage on {{ $labels.instance }}"
+          description: "Memory usage is over 90% for more than 2 minutes."
+
+      # 4. Disk full
+      - alert: DiskSpaceLow
+        expr: (node_filesystem_size_bytes - node_filesystem_free_bytes) / node_filesystem_size_bytes > 0.9
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Low disk space on {{ $labels.instance }}"
+          description: "Disk usage over 90% on {{ $labels.mountpoint }}."
+
+      # 5. Kafka lag
+      - alert: KafkaConsumerLagHigh
+        expr: kafka_consumergroup_lag > 1000
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Kafka consumer lag high"
+          description: "Consumer group {{ $labels.consumergroup }} has lag > 1000 on topic {{ $labels.topic }}"
+
+      # 6. Redis error
+      - alert: RedisErrorRate
+        expr: rate(redis_errors_total[1m]) > 5
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "High Redis error rate"
+          description: "Redis returned > 5 errors/sec over the last minute."
+
+      # 7. HTTP 5xx errors
+      - alert: HighHttpErrorRate
+        expr: rate(http_requests_total{status=~"5.."}[1m]) > 1
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High HTTP 5xx error rate on {{ $labels.job }}"
+          description: "More than 1 5xx error/sec in the last minute."
+
+      # 8. High request duration
+      - alert: SlowRequestDuration
+        expr: histogram_quantile(0.95, rate(sms_duration_seconds_bucket[1m])) > 1
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High request latency on {{ $labels.topic }}"
+          description: "95th percentile request duration > 1s for more than 2 minutes."
+
+      # 9. Too many errors per topic
+      - alert: TooManyKafkaErrors
+        expr: rate(sms_errors_total[1m]) > 5
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High error rate on Kafka producer"
+          description: "More than 5 errors/sec detected on topic {{ $labels.topic }}"
+
+      # 10. No messages published recently
+      - alert: NoMessagePublished
+        expr: rate(sms_published_total[3m]) == 0
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "No messages published to Kafka"
+          description: "No messages published to topic {{ $labels.topic }} for more than 3 minutes."

@@ -1,0 +1,31 @@
+<yandex>
+  <storage_configuration>
+    <disks>
+      <ssd>
+        <path>/var/lib/clickhouse/ssd/</path>
+      </ssd>
+      <hdd>
+        <path>/mnt/hdd/clickhouse/</path>
+      </hdd>
+      <archive>
+        <path>/mnt/archive/clickhouse/</path>
+      </archive>
+    </disks>
+
+    <policies>
+      <tiered_policy>
+        <volumes>
+          <hot>
+            <disk>ssd</disk>
+          </hot>
+          <warm>
+            <disk>hdd</disk>
+          </warm>
+          <cold>
+            <disk>archive</disk>
+          </cold>
+        </volumes>
+      </tiered_policy>
+    </policies>
+  </storage_configuration>
+</yandex>
